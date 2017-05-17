@@ -9,17 +9,22 @@ regNet is an R package that utilizes gene expression and copy number data to lea
    library( devtools )
 
    #Set path to the parent directory into which you downloaded the 'regNet' folder
+   
    regNetParentDir = "..."
+   
    setwd( regNetParentDir )
    
-   
-   #Option 1: Global installation as root into the generally used R package system folder   
+   #
+   #Option 1: Global installation as root into the generally used R package system folder
+      
    install( "regNet" )
    
-   #Option 2: Local installation as standard user into a user-specific R package folder
-     
+   #
+   #Option 2: Local installation as standard user into a user-specific R package folder     
    #Replace "/home/seifert/LocalRLibs/" in both function calls by your own path
-   .libPaths( c( .libPaths(), "/home/seifert/LocalRLibs/" ) )   
+   
+   .libPaths( c( .libPaths(), "/home/seifert/LocalRLibs/" ) )
+   
    install( pkg = "regNet", args = c( '--library="/home/seifert/LocalRLibs/"' ) )
    
 4. regNet should now be installed on your system.
