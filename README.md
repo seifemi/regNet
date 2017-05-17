@@ -2,7 +2,7 @@
 regNet is an R package that utilizes gene expression and copy number data to learn regulatory networks for the quantification of potential impacts of individual gene expression alterations on user-defined target genes via network propagation.
 
 # regNet installation
-1. Download the folder 'regNet'
+1. Download the folder 'regNet'.
 2. Start R and make sure that the libraries 'devtools', 'glmnet', 'Matrix', 'lars', and 'covTest' are installed.
 3. Use the following R code to install regNet:
 
