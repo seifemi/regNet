@@ -15,12 +15,12 @@ regNet is an R package that utilizes gene expression and copy number data to lea
    setwd( regNetParentDir )
    
    #
-   #Option 1: Global installation as root into the generally used R package system folder
+   ### Option 1: Global installation as root into the generally used R package system folder
       
    install( "regNet" )
    
    #
-   #Option 2: Local installation as standard user into a user-specific R package folder     
+   ### Option 2: Local installation as standard user into a user-specific R package folder     
    #Replace "/home/seifert/LocalRLibs/" in both function calls by your own path
    
    .libPaths( c( .libPaths(), "/home/seifert/LocalRLibs/" ) )
@@ -30,7 +30,7 @@ regNet is an R package that utilizes gene expression and copy number data to lea
 4. regNet should now be installed on your system.
 
 5. Download and unpack the file 'AstrocytomaGrades.zip' from Zenodo at http://doi.org/10.5281/zenodo.580600.
-   This Zip-file contains the data sets that allows to demonstrate the basic functionality of regNet within 
+   This file contains the data sets that allow to demonstrate the basic functionality of regNet within 
    a few minutes on a standard computer.
 
 6. Follow the instructions of the R script 'basicCodeUsageExamples.R' to test regNet.
