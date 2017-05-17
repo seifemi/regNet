@@ -1,0 +1,14 @@
+Package: regNet
+Title: regNet: Network-based propagation of gene expression alterations
+Version: 1.0
+Authors@R: person("Michael", "Seifert", email = "michael.seifert@tu-dresden.de", role = c("aut", "cre"))
+Description: regNet utilizes gene expression and copy number data to learn regulatory networks for the quantification of potential impacts of individual gene expression alterations on user-defined target genes via network propagation.
+Depends:
+    R (>= 2.15),
+    glmnet,
+    Matrix,
+    lars,
+    covTest
+License: GPL-3
+LazyData: true
+RoxygenNote: 6.0.1
