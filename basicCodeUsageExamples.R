@@ -238,7 +238,6 @@ networkName = "AS_SignatureTFs"
 computeNetworkFlowMatrix_CohortSpecificAbsoluteImpacts( data = data, dataSetName = dataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, output = output )
 
 
-tfs = as.character( read.delim( file = "/home/seifert/Documents/Latex/PaperProjects/regNet_Rpackage/CaseStudies/AstrocytomaGrades/Data/BasicData/SignatureGenes/SignatureTFs.txt" )[ , 1 ] )
 sourceGenes = c( "RBBP4", "NFIA", "MEOX2", "PAX6", "ZNF337", "THRB", "ZCCHC24", "CCNL2", "TBR1", "ZNF300", "APBA1", "GPR123" )
 targetGenes = data$genes
 outputFile = "HubTFs_AverageAbsoluteImpactsOnOtherGenes.txt"
@@ -256,8 +255,6 @@ for( i in 1:10 )
     
     computeNetworkFlowMatrix_CohortSpecificAbsoluteImpacts( data = data, dataSetName = dataSetName, networkName = randomNetworkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, output = output )
     
-    sourceGenes = c( "RBBP4", "NFIA", "MEOX2", "PAX6", "ZNF337", "THRB", "ZCCHC24", "CCNL2", "TBR1", "ZNF300", "APBA1", "GPR123" )
-    targetGenes = tfs
     outputFile = paste0( "HubTFs_AverageAbsoluteImpactsOnOtherGenesRandomNetwork_", i, ".txt" )
     dummy = getAverageImpacts_CohortSpecificAbsoluteImpacts( sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, networkName = randomNetworkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
     
