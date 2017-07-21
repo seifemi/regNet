@@ -33,5 +33,5 @@ regNet is an R package that utilizes gene expression and copy number data to lea
    This file contains the data sets that allow to demonstrate the basic functionality of regNet within 
    a few minutes on a standard computer.
 
-6. Follow the instructions of the R script 'basicCodeUsageExamples.R' to test regNet. See file 'regNet_Vingette.pdf' for
+6. Follow the instructions of the R script 'basicCodeUsageExamples.R' to test regNet. See file 'regNet_Vignette.pdf' for
    more details to this case study.
