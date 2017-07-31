@@ -95,7 +95,7 @@ for( i in 1:10 )
 
 #######################################################################################################################################################################
 ##
-## Network predictions
+## Network-based predictions of gene expression levels
 ##
 #######################################################################################################################################################################
 
@@ -222,27 +222,32 @@ for( i in 1:3 )
 
 #######################################################################################################################################################################
 ##
-## Network propagation
+## Network propagation: Compute cohort-specific impacts
 ##
 #######################################################################################################################################################################
 
-
+##
 ##
 ##Which hub TF has the greatest impact on all other reachable TFs
 ##
+##
 
+##
 ##Get average impacts: cohort-specific absolute impacts
+##
 dataSetName = "AS_SignatureTFs"
 networkName = "AS_SignatureTFs"
 
+##Compute cohort-specific impact matrix for all gene pairs for the given data set (data: paired gene expression and copy number profiles) with respect to the learned network (networkName)
 computeNetworkFlowMatrix_CohortSpecificAbsoluteImpacts( data = data, dataSetName = dataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, output = output )
 
-
+##Get average impact of each source gene (sourceGenes) on all target genes (targetGenes) from the previously computed cohort-specific impact matrix
 sourceGenes = c( "RBBP4", "NFIA", "MEOX2", "PAX6", "ZNF337", "THRB", "ZCCHC24", "CCNL2", "TBR1", "ZNF300", "APBA1", "GPR123" )
 targetGenes = data$genes
 outputFile = "HubTFs_AverageAbsoluteImpactsOnOtherGenes.txt"
 res_orig = getAverageImpacts_CohortSpecificAbsoluteImpacts( sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
 
+##Get impacts of each source gene (sourceGenes) on each target gene (targetGenes) from the previously computed cohort-specific impact matrix
 outputFile = "HubTFs_AbsoluteImpactsOnOtherGenes.txt"
 res = getImpacts_CohortSpecificAbsoluteImpacts( sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
 
@@ -253,8 +258,10 @@ for( i in 1:10 )
     randomNetworkName = paste0( "RandomNetwork_", i, "_PValueCutoff_0.01_BasedOn_", networkName )
     dataSetName = "AS_SignatureTFs"
     
+    ##Compute cohort-specific impact matrix for all gene pairs for the given data set with respect to the random network (randomNetworkName)
     computeNetworkFlowMatrix_CohortSpecificAbsoluteImpacts( data = data, dataSetName = dataSetName, networkName = randomNetworkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, output = output )
     
+    ##Get average impact of each source gene on all target genes from the cohort-specific impact matrix previously computed for the random network
     outputFile = paste0( "HubTFs_AverageAbsoluteImpactsOnOtherGenesRandomNetwork_", i, ".txt" )
     dummy = getAverageImpacts_CohortSpecificAbsoluteImpacts( sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, networkName = randomNetworkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
     
@@ -271,7 +278,7 @@ avgRandImpact = avgRandImpact / 10
 
 
 ##
-##Impact summary plot
+##Impact summary plot for average impacts
 ##
 L = length( res_orig[ , 2 ] )
 plot( x = 1:L, y = res_orig[ , 2 ], type = "h", col = rgb( red = 0.85, green = 0, blue = 0, alpha = 0.7 ), xlab = "", ylab = "Average impact", main = "Hub-regulator impacts", axes = FALSE )        
@@ -279,3 +286,263 @@ points( x = 1:L + 0.2, y = avgRandImpact, type = "h", col = "darkgrey" )
 legend( x = 0, y = 0.08, legend = c( "TF-Network", "Random" ), text.col = c( rgb( red = 0.85, green = 0, blue = 0, alpha = 0.7 ), "darkgrey" ), lty = 0, col = c( rgb( red = 0.85, green = 0, blue = 0, alpha = 0.7 ), "darkgrey" ), bty = "n" )
 axis( 1, at = 1:L, labels = sourceGenes, las = 2, cex.axis = 0.8 )
 axis( 2 )
+
+
+
+#######################################################################################################################################################################
+##
+## Network propagation: Compute patient-specific absolute impacts
+##
+#######################################################################################################################################################################
+
+##
+##
+##Which hub TF has the greatest impact on all other reachable TFs for selected patients
+##
+##
+
+##
+##Get average impacts: patient-specific absolute impacts
+##
+networkName = "AS_SignatureTFs"
+
+##
+##Compute patient-specific impact matrix for all gene pairs for a specific patient in the given data set with respect to the previously learned network
+##
+
+##Impact matrix for patient 6 of the TCGA GBM TF data set
+dataSetName = "TCGA_GBM_SignatureTFs"
+w <- getOption( "warn" )
+options( warn = -1 )
+computeNetworkFlowMatrix_PatientSpecificAbsoluteImpacts( patient = 6, data = gbmTFData, dataSetName = dataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, output = output )
+options( warn = w )
+
+##Get average absolute impact of each source gene (sourceGenes) on all target genes (targetGenes) from the previously computed patient-specific impact matrix for patient 6 of the TCGA GBM TF data set
+sourceGenes = c( "RBBP4", "NFIA", "MEOX2", "PAX6", "ZNF337", "THRB", "ZCCHC24", "CCNL2", "TBR1", "ZNF300", "APBA1", "GPR123" )
+targetGenes = data$genes
+outputFile = "HubTFs_AverageAbsoluteImpactsOnOtherGenes_Patient_6_TCGA_GBM_DataSet.txt"
+resPatient6_GBM_abs = getAverageImpacts_PatientSpecificAbsoluteImpacts( patient = 6, sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
+
+##Get absolute impacts of each source gene (sourceGenes) on each target gene (targetGenes) from the previously computed patient-specific impact matrix for patient 6 of the TCGA GBM TF data set
+outputFile = "HubTFs_AbsoluteImpactsOnOtherGenes_Patient_6_TCGA_GBM_DataSet.txt"
+res = getImpacts_PatientSpecificAbsoluteImpacts( patient = 6, sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
+
+
+##Impact matrix for patient 18 of the PA TF data set
+dataSetName = "PA_GSE5675_SignatureTFs"
+computeNetworkFlowMatrix_PatientSpecificAbsoluteImpacts( patient = 18, data = paTFData, dataSetName = dataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, output = output )
+
+##Get average absolute impact of each source gene (sourceGenes) on all target genes (targetGenes) from the previously computed patient-specific impact matrix for patient 18 of the PA TF data set
+sourceGenes = c( "RBBP4", "NFIA", "MEOX2", "PAX6", "ZNF337", "THRB", "ZCCHC24", "CCNL2", "TBR1", "ZNF300", "APBA1", "GPR123" )
+targetGenes = data$genes
+outputFile = "HubTFs_AverageAbsoluteImpactsOnOtherGenes_Patient_18_PA_DataSet.txt"
+resPatient18_PA_abs = getAverageImpacts_PatientSpecificAbsoluteImpacts( patient = 18, sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
+
+##Get absolute impacts of each source gene (sourceGenes) on each target gene (targetGenes) from the previously computed patient-specific impact matrix for patient 18 of the PA TF data set
+outputFile = "HubTFs_AbsoluteImpactsOnOtherGenes_Patient_18_PA_DataSet.txt"
+res = getImpacts_PatientSpecificAbsoluteImpacts( patient = 18, sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
+
+
+##
+##Impact summary plot for average impacts
+##
+x11( width = 11, height = 5 )
+layout( mat = matrix( 1:2, nrow = 1, ncol = 2 ) )
+L = length( resPatient6_GBM_abs[ , 2 ] )
+plot( x = 1:L, y = resPatient6_GBM_abs[ , 2 ], type = "h", col = "red", xlab = "", ylab = "Average absolute impact", main = "Patient-specific absolute hub impacts", axes = FALSE )        
+points( x = 1:L + 0.2, y = resPatient18_PA_abs[ , 2 ], type = "h", col = "green" )
+legend( x = 0, y = 0.035, legend = c( "GBM: Patient 6", "PA: Patient 18" ), text.col = c( "red", "green" ), lty = 0, col = c( "red", "green" ), bty = "n" )
+axis( 1, at = 1:L, labels = sourceGenes, las = 2, cex.axis = 0.8 )
+axis( 2 )
+
+
+
+#######################################################################################################################################################################
+##
+## Network propagation: Compute patient-specific relative impacts
+##
+#######################################################################################################################################################################
+
+##
+##
+##Which hub TFs act on average as activators (positive impact) or inhibitors (negative impact) of all other reachable TFs for selected patients
+##
+##
+
+##
+##Get average impacts: patient-specific relative impacts
+##
+networkName = "AS_SignatureTFs"
+
+##
+##Compute patient-specific impact matrix for all gene pairs for a specific patient in the given data set with respect to the previously learned network
+##
+
+##Impact matrix for patient 6 of the TCGA GBM TF data set
+dataSetName = "TCGA_GBM_SignatureTFs"
+w <- getOption( "warn" )
+options( warn = -1 )
+computeNetworkFlowMatrix_PatientSpecificRelativeImpacts( patient = 6, data = gbmTFData, dataSetName = dataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, output = output )
+options( warn = w )
+
+##Get average relative impact of each source gene (sourceGenes) on all target genes (targetGenes) from the previously computed patient-specific impact matrix for patient 6 of the TCGA GBM TF data set
+sourceGenes = c( "RBBP4", "NFIA", "MEOX2", "PAX6", "ZNF337", "THRB", "ZCCHC24", "CCNL2", "TBR1", "ZNF300", "APBA1", "GPR123" )
+targetGenes = data$genes
+outputFile = "HubTFs_AverageRelativeImpactsOnOtherGenes_Patient_6_TCGA_GBM_DataSet.txt"
+resPatient6_GBM_rel = getAverageImpacts_PatientSpecificRelativeImpacts( patient = 6, sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
+
+##Get relative impacts of each source gene (sourceGenes) on each target gene (targetGenes) from the previously computed patient-specific impact matrix for patient 6 of the TCGA GBM TF data set
+outputFile = "HubTFs_RelativeImpactsOnOtherGenes_Patient_6_TCGA_GBM_DataSet.txt"
+res = getImpacts_PatientSpecificRelativeImpacts( patient = 6, sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
+
+
+##Impact matrix for patient 18 of the PA TF data set
+dataSetName = "PA_GSE5675_SignatureTFs"
+computeNetworkFlowMatrix_PatientSpecificRelativeImpacts( patient = 18, data = paTFData, dataSetName = dataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, output = output )
+
+##Get average relative impact of each source gene (sourceGenes) on all target genes (targetGenes) from the previously computed patient-specific impact matrix for patient 18 of the PA TF data set
+sourceGenes = c( "RBBP4", "NFIA", "MEOX2", "PAX6", "ZNF337", "THRB", "ZCCHC24", "CCNL2", "TBR1", "ZNF300", "APBA1", "GPR123" )
+targetGenes = data$genes
+outputFile = "HubTFs_AverageRelativeImpactsOnOtherGenes_Patient_18_PA_DataSet.txt"
+resPatient18_PA_rel = getAverageImpacts_PatientSpecificRelativeImpacts( patient = 18, sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
+
+##Get relative impacts of each source gene (sourceGenes) on each target gene (targetGenes) from the previously computed patient-specific impact matrix for patient 18 of the PA TF data set
+outputFile = "HubTFs_RelativeImpactsOnOtherGenes_Patient_18_PA_DataSet.txt"
+res = getImpacts_PatientSpecificRelativeImpacts( patient = 18, sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
+
+
+##
+##Impact summary plot for average impacts
+##
+L = length( resPatient6_GBM_rel[ , 2 ] )
+plot( x = 1:L, y = resPatient6_GBM_rel[ , 2 ], type = "h", col = "red", xlab = "", ylab = "Average relative impact", main = "Patient-specific relative hub impacts", axes = FALSE )        
+points( x = 1:L + 0.2, y = resPatient18_PA_rel[ , 2 ], type = "h", col = "green" )
+lines( x = c( 0, L ), y = c( 0, 0 ), lty = 3, lwd = 0.3 )
+legend( x = 0, y = 0.02, legend = c( "GBM: Patient 6", "PA: Patient 18" ), text.col = c( "red", "green" ), lty = 0, col = c( "red", "green" ), bty = "n" )
+axis( 1, at = 1:L, labels = sourceGenes, las = 2, cex.axis = 0.8 )
+axis( 2 )
+
+
+
+
+#######################################################################################################################################################################
+##
+## Network propagation: Compute impacts for a new cohort or a new patient utilizing a pre-computed correlation statistics
+##
+#######################################################################################################################################################################
+
+##
+##
+##Let us consider the following situation:
+##- We have already learned a regulatory network from a large cohort of patients.
+##- We evaluated the predictive power of the learned network by predicting the expression levels of genes for another large test cohort of patients with similar
+##  gene expression and gene copy number profiles (e.g. patients that were diagnosed to have a specific type of cancer). Thus, we already have the correlation
+##  statistics for the test cohort containing the gene-specific correlations between predicted and originally measured expression levels.
+##- Now, a new little cohort or a single patient has to be analyzed, but the number of samples in this new data set is not large enough to obtain a robust correlation
+##  statistics for these new data.
+##- regNet allows to analyze this new data sets by utilizing a learned network and a pre-computed correlation statistics.
+##
+##The following code examples demonstrate how this can be used to obtain cohort-specific and patient-specific impact scores for a new cohort or patient.
+##
+
+######################
+##
+##
+##Cohort-specific impacts for new data set
+##
+##
+networkName = "AS_SignatureTFs"
+corStatDataSetName = "TCGA_LGG_SignatureTFs"
+
+##
+##Compute patient-specific absolute impact matrix for all gene pairs for a given data set (gbmTFData) with respect to the previously learned network (networkName) and the previously computed correlation statistics (corStatDataSetName)
+##
+
+##Impact matrix for TCGA GBM TF data set
+dataSetName = "TCGA_GBM_SignatureTFs"
+w <- getOption( "warn" )
+options( warn = -1 )
+computeNetworkFlowMatrixBasedOnGivenCorStat_CohortSpecificAbsoluteImpacts( data = gbmTFData, dataSetName = dataSetName, corStatDataSetName = corStatDataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, output = output )
+options( warn = w )
+
+##Get average absolute impact of each source gene (sourceGenes) on all target genes (targetGenes) from the previously computed impact matrix
+sourceGenes = c( "RBBP4", "NFIA", "MEOX2", "PAX6", "ZNF337", "THRB", "ZCCHC24", "CCNL2", "TBR1", "ZNF300", "APBA1", "GPR123" )
+targetGenes = data$genes
+outputFile = "HubTFs_AverageAbsoluteImpactsOnOtherGenes_Utilizing_CorStat_TCGA_LGG_SignatureTFs.txt"
+resPatient6_GBM_rel = getAverageImpactsBasedOnGivenCorStat_CohortSpecificAbsoluteImpacts( sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, corStatDataSetName = corStatDataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
+
+##Get absolute impacts of each source gene (sourceGenes) on each target gene (targetGenes) from the previously computed impact matrix
+outputFile = "HubTFs_AbsoluteImpactsOnOtherGenes_Utilizing_CorStat_TCGA_LGG_SignatureTFs.txt"
+
+res = getImpactsBasedOnGivenCorStat_CohortSpecificAbsoluteImpacts( sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, networkName = networkName, corStatDataSetName = corStatDataSetName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
+
+######################
+
+
+######################
+##
+##
+##Patient-specific absolute impacts for a new patient
+##
+##
+networkName = "AS_SignatureTFs"
+corStatDataSetName = "TCGA_LGG_SignatureTFs"
+
+##
+##Compute patient-specific absolute impact matrix for all gene pairs for a specific patient in the given data set (gbmTFData) with respect to the previously learned network (networkName) and the previously computed correlation statistics (corStatDataSetName)
+##
+
+##Impact matrix for patient 6 of the TCGA GBM TF data set
+dataSetName = "TCGA_GBM_SignatureTFs"
+w <- getOption( "warn" )
+options( warn = -1 )
+computeNetworkFlowMatrixBasedOnGivenCorStat_PatientSpecificAbsoluteImpacts( patient = 6, data = gbmTFData, dataSetName = dataSetName, corStatDataSetName = corStatDataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, output = output )
+options( warn = w )
+
+##Get average absolute impact of each source gene (sourceGenes) on all target genes (targetGenes) from the previously computed patient-specific impact matrix for patient 6 of the TCGA GBM TF data set
+sourceGenes = c( "RBBP4", "NFIA", "MEOX2", "PAX6", "ZNF337", "THRB", "ZCCHC24", "CCNL2", "TBR1", "ZNF300", "APBA1", "GPR123" )
+targetGenes = data$genes
+outputFile = "HubTFs_AverageAbsoluteImpactsOnOtherGenes_Patient_6_TCGA_GBM_DataSet_Utilizing_CorStat_TCGA_LGG_SignatureTFs.txt"
+resPatient6_GBM_rel = getAverageImpactsBasedOnGivenCorStat_PatientSpecificAbsoluteImpacts( patient = 6, sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, corStatDataSetName = corStatDataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
+
+##Get absolute impacts of each source gene (sourceGenes) on each target gene (targetGenes) from the previously computed patient-specific impact matrix for patient 6 of the TCGA GBM TF data set
+outputFile = "HubTFs_AbsoluteImpactsOnOtherGenes_Patient_6_TCGA_GBM_DataSet_Utilizing_CorStat_TCGA_LGG_SignatureTFs.txt"
+
+res = getImpactsBasedOnGivenCorStat_PatientSpecificAbsoluteImpacts( patient = 6, sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, networkName = networkName, corStatDataSetName = corStatDataSetName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
+
+######################
+
+
+######################
+##
+##
+##Patient-specific relative impacts for a new patient
+##
+##
+networkName = "AS_SignatureTFs"
+corStatDataSetName = "TCGA_LGG_SignatureTFs"
+
+##
+##Compute patient-specific relative impact matrix for all gene pairs for a specific patient the given data set (gbmTFData) with respect to the previously learned network (networkName) and the previously computed correlation statistics (corStatDataSetName)
+##
+
+##Impact matrix for patient 6 of the TCGA GBM TF data set
+dataSetName = "TCGA_GBM_SignatureTFs"
+w <- getOption( "warn" )
+options( warn = -1 )
+computeNetworkFlowMatrixBasedOnGivenCorStat_PatientSpecificRelativeImpacts( patient = 6, data = gbmTFData, dataSetName = dataSetName, corStatDataSetName = corStatDataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, output = output )
+options( warn = w )
+
+##Get average relative impact of each source gene (sourceGenes) on all target genes (targetGenes) from the previously computed patient-specific impact matrix for patient 6 of the TCGA GBM TF data set
+sourceGenes = c( "RBBP4", "NFIA", "MEOX2", "PAX6", "ZNF337", "THRB", "ZCCHC24", "CCNL2", "TBR1", "ZNF300", "APBA1", "GPR123" )
+targetGenes = data$genes
+outputFile = "HubTFs_AverageRelativeImpactsOnOtherGenes_Patient_6_TCGA_GBM_DataSet_Utilizing_CorStat_TCGA_LGG_SignatureTFs.txt"
+resPatient6_GBM_rel = getAverageImpactsBasedOnGivenCorStat_PatientSpecificRelativeImpacts( patient = 6, sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, corStatDataSetName = corStatDataSetName, networkName = networkName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
+
+##Get relative impacts of each source gene (sourceGenes) on each target gene (targetGenes) from the previously computed patient-specific impact matrix for patient 6 of the TCGA GBM TF data set
+outputFile = "HubTFs_RelativeImpactsOnOtherGenes_Patient_6_TCGA_GBM_DataSet_Utilizing_CorStat_TCGA_LGG_SignatureTFs.txt"
+
+res = getImpactsBasedOnGivenCorStat_PatientSpecificRelativeImpacts( patient = 6, sourceGenes = sourceGenes, targetGenes = targetGenes, dataSetName = dataSetName, networkName = networkName, corStatDataSetName = corStatDataSetName, pValCutoff = 0.01, localGeneCutoff = 0, colSumsThreshold = 1e-3, path = projectPath, outputFile = outputFile, output = output )
+
+######################
+
