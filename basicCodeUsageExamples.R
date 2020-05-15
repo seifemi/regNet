@@ -201,7 +201,7 @@ for( i in 1:3 )
     avgRandPredictions = c()
     for( r in 1:10 )
     {
-      randPred = as.numeric( read.delim( file = paste( projectPath, "/NetworkPredictions/", testDataSets[ i ], "_PredictionOfGeneExpressionBasedOn_RandomNetwork_", i, "_PValueCutoff_0.01_BasedOn_AS_SignatureTFs_PValueCutoff_0.01_LocalGeneCutoff_0.txt", sep = "" ), header = TRUE )[ , 2 ] )
+      randPred = as.numeric( read.delim( file = paste( projectPath, "/NetworkPredictions/", testDataSets[ i ], "_PredictionOfGeneExpressionBasedOn_RandomNetwork_", r, "_PValueCutoff_0.01_BasedOn_AS_SignatureTFs_PValueCutoff_0.01_LocalGeneCutoff_0.txt", sep = "" ), header = TRUE )[ , 2 ] )
       if( r == 1 )
       {
         avgRandPredictions = randPred
